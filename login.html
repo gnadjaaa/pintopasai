@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinto Pasai - Masuk & Daftar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Urbanist:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #003366;
+            --emerald: #008037;
+            --gold: #c5a059;
+            --danger: #ef4444;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: #f0f4f8;
+            background-image:
+                linear-gradient(rgba(0,51,102,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,128,55,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+
+        .login-card {
+            background: #ffffff;
+            width: 100%; max-width: 440px;
+            padding: 36px 32px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            position: relative; overflow: hidden;
+        }
+
+        .login-card::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, var(--navy), var(--gold), var(--emerald));
+        }
+
+        /* BRAND */
+        .brand {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; margin-bottom: 24px;
+        }
+        .brand-name {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 28px; font-weight: 800; color: var(--navy);
+        }
+        .brand-name span { color: var(--emerald); }
+        .brand-sub {
+            text-align: center; font-size: 12px;
+            color: var(--text-muted); margin-top: -18px; margin-bottom: 20px;
+        }
+
+        /* TAB MASUK / DAFTAR */
+        .auth-toggle {
+            display: grid; grid-template-columns: 1fr 1fr;
+            border-bottom: 2px solid #e2e8f0; margin-bottom: 22px;
+        }
+        .toggle-tab {
+            background: none; border: none; padding: 11px 0;
+            font-size: 14px; font-weight: 600;
+            color: var(--text-muted); cursor: pointer;
+            border-bottom: 2px solid transparent; margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .toggle-tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+
+        /* ROLE SELECTOR */
+        .role-selector {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 8px; margin-bottom: 20px;
+            background: #f1f5f9; padding: 6px; border-radius: 12px;
+        }
+        .role-btn {
+            background: none; border: none; padding: 10px 8px;
+            border-radius: 8px; font-size: 13px; font-weight: 600;
+            color: var(--text-muted); cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .role-btn.active-pemasok { background: var(--navy); color: #fff; box-shadow: 0 4px 10px rgba(0,51,102,0.2); }
+        .role-btn.active-pembeli { background: var(--emerald); color: #fff; box-shadow: 0 4px 10px rgba(0,128,55,0.2); }
+
+        /* FORM */
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+
+        .input-wrapper { position: relative; }
+        .input-wrapper i.icon-left {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 13px; pointer-events: none;
+        }
+        .input-wrapper input {
+            width: 100%; padding: 12px 14px 12px 40px;
+            background: #f8fafc; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 14px; outline: none;
+            transition: all 0.2s; color: var(--text-main);
+        }
+        .input-wrapper input:focus {
+            border-color: var(--navy); background: #fff;
+            box-shadow: 0 0 0 4px rgba(0,51,102,0.06);
+        }
+
+        /* ALERT BOX */
+        .alert-box {
+            display: none; padding: 12px 14px; border-radius: 10px;
+            font-size: 13px; font-weight: 500; margin-bottom: 16px;
+            align-items: center; gap: 10px;
+        }
+        .alert-box.show { display: flex; }
+        .alert-box.error { background: rgba(239,68,68,0.08); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+        .alert-box.success { background: rgba(0,128,55,0.08); color: var(--emerald); border: 1px solid rgba(0,128,55,0.2); }
+
+        /* SUBMIT BUTTON */
+        .btn-auth {
+            width: 100%; border: none; padding: 14px;
+            border-radius: 10px; font-size: 14px; font-weight: 700;
+            cursor: pointer; margin-top: 8px; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: white;
+        }
+        .btn-auth.pemasok-btn { background: linear-gradient(135deg, var(--navy), #001f3f); }
+        .btn-auth.pembeli-btn { background: linear-gradient(135deg, var(--emerald), #005522); }
+        .btn-auth.register-pemasok-btn { background: linear-gradient(135deg, var(--gold), #9a7631); }
+        .btn-auth.register-pembeli-btn { background: linear-gradient(135deg, var(--emerald), #005522); }
+        .btn-auth:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-auth:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* DIVIDER */
+        .form-section-label {
+            font-size: 11px; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin: 16px 0 10px;
+        }
+        .form-divider {
+            border: none; border-top: 1px dashed #e2e8f0; margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="brand">
+        <div class="brand-name">Pinto<span>Pasai</span></div>
+    </div>
+    <p class="brand-sub">Platform Distribusi Komoditas Digital</p>
+
+    <div class="auth-toggle">
+        <button class="toggle-tab active" id="tab-masuk" onclick="switchForm('masuk')">Masuk (Login)</button>
+        <button class="toggle-tab" id="tab-daftar" onclick="switchForm('daftar')">Daftar Akun</button>
+    </div>
+
+    <div class="role-selector">
+        <button type="button" class="role-btn active-pemasok" id="btn-pemasok" onclick="selectRole('pemasok')">
+            <i class="fa-solid fa-warehouse"></i> Pemasok
+        </button>
+        <button type="button" class="role-btn" id="btn-pembeli" onclick="selectRole('pembeli')">
+            <i class="fa-solid fa-basket-shopping"></i> Pembeli
+        </button>
+    </div>
+
+    <div class="alert-box" id="alert-box">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="alert-text"></span>
+    </div>
+
+    <form id="form-masuk" class="auth-form active" onsubmit="handleLogin(event)">
+        <div class="form-group">
+            <label>Username</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-user icon-left"></i>
+                <input type="text" id="login-username" placeholder="Masukkan username Anda" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-lock icon-left"></i>
+                <input type="password" id="login-password" placeholder="••••••••" required>
+            </div>
+        </div>
+        <button type="submit" class="btn-auth pemasok-btn" id="btn-login">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span id="btn-login-text">Masuk sebagai Pemasok</span>
+        </button>
+    </form>
+
+    <form id="form-daftar" class="auth-form" onsubmit="handleRegister(event)">
+        <p class="form-section-label">Informasi Akun</p>
+        <div class="form-group">
+            <label>Username</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-user icon-left"></i>
+                <input type="text" id="reg-username" placeholder="Buat nama pengguna unik" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Email Aktif</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-envelope icon-left"></i>
+                <input type="email" id="reg-email" placeholder="email@contoh.com" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-lock icon-left"></i>
+                <input type="password" id="reg-password" placeholder="Minimal 6 karakter" required minlength="6">
+            </div>
+        </div>
+
+        <hr class="form-divider">
+        <p class="form-section-label" id="reg-section-label">Informasi Usaha (Pemasok)</p>
+
+        <div id="reg-fields-pemasok">
+            <div class="form-group">
+                <label>Nama Usaha / Gudang</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-store icon-left"></i>
+                    <input type="text" id="reg-nama-usaha" placeholder="Contoh: Gudang Mitra Utama">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>No. Telepon / WhatsApp</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-phone icon-left"></i>
+                    <input type="text" id="reg-telepon" placeholder="+62 8xx-xxxx-xxxx">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Alamat Gudang</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-location-dot icon-left"></i>
+                    <input type="text" id="reg-alamat" placeholder="Jl. Contoh No. 1, Kota">
+                </div>
+            </div>
+        </div>
+
+        <div id="reg-fields-pembeli" style="display:none;">
+            <div class="form-group">
+                <label>Nama Lengkap</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-id-card icon-left"></i>
+                    <input type="text" id="reg-nama-lengkap" placeholder="Nama sesuai identitas">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>No. Telepon</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-phone icon-left"></i>
+                    <input type="text" id="reg-telepon-pembeli" placeholder="+62 8xx-xxxx-xxxx">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-auth register-pemasok-btn" id="btn-register">
+            <i class="fa-solid fa-user-plus"></i>
+            <span id="btn-register-text">Daftarkan Akun Pemasok</span>
+        </button>
+    </form>
+</div>
+
+<script>
+    const API_URL = "api.php";
+    let currentRole = 'pemasok'; 
+    let currentForm = 'masuk';   
+
+    function switchForm(mode) {
+        currentForm = mode;
+        document.getElementById('form-masuk').classList.toggle('active', mode === 'masuk');
+        document.getElementById('form-daftar').classList.toggle('active', mode === 'daftar');
+        document.getElementById('tab-masuk').classList.toggle('active', mode === 'masuk');
+        document.getElementById('tab-daftar').classList.toggle('active', mode === 'daftar');
+        clearAlert();
+    }
+
+    function selectRole(role) {
+        currentRole = role;
+        const btnPemasok = document.getElementById('btn-pemasok');
+        const btnPembeli = document.getElementById('btn-pembeli');
+
+        btnPemasok.className = 'role-btn' + (role === 'pemasok' ? ' active-pemasok' : '');
+        btnPembeli.className = 'role-btn' + (role === 'pembeli' ? ' active-pembeli' : '');
+
+        const loginText = document.getElementById('btn-login-text');
+        loginText.textContent = role === 'pemasok' ? 'Masuk sebagai Pemasok' : 'Masuk sebagai Pembeli';
+
+        const btnLogin = document.getElementById('btn-login');
+        btnLogin.className = 'btn-auth ' + (role === 'pemasok' ? 'pemasok-btn' : 'pembeli-btn');
+
+        const regText = document.getElementById('btn-register-text');
+        regText.textContent = role === 'pemasok' ? 'Daftarkan Akun Pemasok' : 'Daftarkan Akun Pembeli';
+
+        const btnReg = document.getElementById('btn-register');
+        btnReg.className = 'btn-auth ' + (role === 'pemasok' ? 'register-pemasok-btn' : 'register-pembeli-btn');
+
+        document.getElementById('reg-section-label').textContent =
+            role === 'pemasok' ? 'Informasi Usaha (Pemasok)' : 'Informasi Pribadi (Pembeli)';
+
+        document.getElementById('reg-fields-pemasok').style.display = role === 'pemasok' ? 'block' : 'none';
+        document.getElementById('reg-fields-pembeli').style.display = role === 'pembeli' ? 'block' : 'none';
+
+        clearAlert();
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-login');
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        clearAlert();
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi Kredensial...';
+
+        try {
+            const res = await fetch(`${API_URL}?action=login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, role: currentRole })
+            });
+
+            const result = await res.json();
+
+            if (result.status === 'success') {
+                showAlert('success', 'Verifikasi berhasil! Mengalihkan ke gerbang sistem...');
+                
+                setTimeout(() => {
+                    if (result.role === 'pemasok') {
+                        window.location.href = 'dashboard.php'; // Disinkronkan ke file .php
+                    } else {
+                        window.location.href = 'pembeli.php';   // Disinkronkan ke file .php
+                    }
+                }, 800);
+            } else {
+                showAlert('error', result.message || 'Kombinasi kata sandi / username tidak ditemukan.');
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> <span>Masuk sebagai ${currentRole === 'pemasok' ? 'Pemasok' : 'Pembeli'}</span>`;
+            }
+        } catch (err) {
+            showAlert('error', 'Gagal menyambungkan ke pangkalan data server. Periksa status XAMPP/Ampps Anda.');
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> <span>Masuk sebagai ${currentRole === 'pemasok' ? 'Pemasok' : 'Pembeli'}</span>`;
+        }
+    }
+
+    async function handleRegister(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-register');
+        clearAlert();
+
+        const username = document.getElementById('reg-username').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value;
+
+        if (password.length < 6) {
+            showAlert('error', 'Tingkat keamanan password lemah! Minimal wajib berisi 6 karakter.');
+            return;
+        }
+
+        let payload = { username, email, password, role: currentRole };
+
+        if (currentRole === 'pemasok') {
+            payload.nama_usaha = document.getElementById('reg-nama-usaha').value.trim();
+            payload.telepon    = document.getElementById('reg-telepon').value.trim();
+            payload.alamat     = document.getElementById('reg-alamat').value.trim();
+        } else {
+            payload.nama_lengkap = document.getElementById('reg-nama-lengkap').value.trim();
+            payload.telepon      = document.getElementById('reg-telepon-pembeli').value.trim();
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan Berkas Akun Baru...';
+
+        try {
+            const res = await fetch(`${API_URL}?action=register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await res.json();
+
+            if (result.status === 'success') {
+                showAlert('success', `Selamat, pendaftaran akun ${currentRole} berhasil diproses! Membuka halaman login.`);
+                e.target.reset();
+                setTimeout(() => switchForm('masuk'), 1500);
+            } else {
+                showAlert('error', result.message || 'Pendaftaran akun ditolak. Username atau email telah terdaftar.');
+            }
+        } catch (err) {
+            showAlert('error', 'Terjadi gangguan koneksi internet atau server backend lokal terputus.');
+        }
+
+        btn.disabled = false;
+        const regLabel = currentRole === 'pemasok' ? 'Daftarkan Akun Pemasok' : 'Daftarkan Akun Pembeli';
+        btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> ${regLabel}`;
+    }
+
+    function showAlert(type, message) {
+        const box = document.getElementById('alert-box');
+        const text = document.getElementById('alert-text');
+        box.className = `alert-box show ${type}`;
+        box.querySelector('i').className = type === 'error'
+            ? 'fa-solid fa-circle-exclamation'
+            : 'fa-solid fa-circle-check';
+        text.textContent = message;
+    }
+
+    function clearAlert() {
+        const box = document.getElementById('alert-box');
+        box.className = 'alert-box';
+    }
+</script>
+</body>
+</html>
