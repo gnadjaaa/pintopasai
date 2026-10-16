@@ -4,7 +4,7 @@ session_start();
 header("Content-Type: application/json; charset=UTF-8");
 date_default_timezone_set('Asia/Jakarta');
 
-// Sembunyikan error PHP mentah ke browser, tapi tetap aman dalam JSON jika koneksi mati
+//sembunyikan error PHP mentah ke browser, tapi tetap aman dalam JSON jika koneksi mati
 error_reporting(0);
 ini_set('display_errors', 0);
 
@@ -23,7 +23,7 @@ if ($action == 'login') {
     $password = $data['password'] ?? '';
     $role     = $conn->real_escape_string($data['role'] ?? 'pemasok');
 
-    // Tambahkan filter 'role' saat query login agar tidak salah kamar
+    //tambahkan filter 'role' saat query login agar tidak salah kamar
     $res = $conn->query("SELECT * FROM users WHERE username = '$username' AND role = '$role'");
     if ($res && $res->num_rows > 0) {
         $user = $res->fetch_assoc();
